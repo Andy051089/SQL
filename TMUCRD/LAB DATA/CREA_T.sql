@@ -3,7 +3,7 @@ TEMP_TMU AS (
 	SELECT * FROM v_exp_item_T
 	WHERE R_ITEM_NAME LIKE 'CRE%' 
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
 INTO T_OPD_LAB_CREA
@@ -30,7 +30,7 @@ TEMP_TMU AS (
 	SELECT * FROM v_exp_item_T
 	WHERE R_ITEM_NAME LIKE 'CRE%' 
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
 INTO T_IPD_LAB_CREA
@@ -60,7 +60,7 @@ WITH COMBINED_CREA AS (
     FROM T_IPD_LAB_CREA
 ),
 RANKED_CREA AS (
-    SELECT *,
+    SELECT DISTINCT*,
         ROW_NUMBER() OVER (
             PARTITION BY FEE_NO 
             ORDER BY R_DATE, R_TIME
@@ -68,8 +68,8 @@ RANKED_CREA AS (
     FROM COMBINED_CREA
     WHERE ISNUMERIC(LEFT(value, CHARINDEX(' ', value + ' ') - 1)) = 1
 )
-SELECT 
-    FEE_NO,
+SELECT DISTINCT
+    FEE_NO,ID_NO,
 	LEFT(value, CHARINDEX(' ', value + ' ') - 1) AS CREA
 INTO FINAL_T_LAB_CREA
 FROM RANKED_CREA

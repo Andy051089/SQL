@@ -5,7 +5,7 @@ TEMP_SHH AS (
 	OR R_ITEM_NAME LIKE 'Hgb%' 
 	OR R_ITEM_NAME LIKE '%(¦å¬õ¯À%'
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
 INTO S_OPD_LAB_HB
@@ -34,7 +34,7 @@ TEMP_SHH AS (
 	OR R_ITEM_NAME LIKE 'Hgb%' 
 	OR R_ITEM_NAME LIKE '%(¦å¬õ¯À%'
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
 INTO S_IPD_LAB_HB
@@ -64,7 +64,7 @@ WITH COMBINED_HB AS (
     FROM S_IPD_LAB_HB
 ),
 RANKED_HB AS (
-    SELECT *,
+    SELECT DISTINCT *,
         ROW_NUMBER() OVER (
             PARTITION BY FEE_NO 
             ORDER BY R_DATE, R_TIME
@@ -72,8 +72,8 @@ RANKED_HB AS (
     FROM COMBINED_HB
     WHERE ISNUMERIC(LEFT(value, CHARINDEX(' ', value + ' ') - 1)) = 1
 )
-SELECT 
-    FEE_NO,
+SELECT DISTINCT
+    FEE_NO,ID_NO,
 	LEFT(value, CHARINDEX(' ', value + ' ') - 1) AS HB
 INTO FINAL_S_LAB_HB
 FROM RANKED_HB

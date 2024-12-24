@@ -3,7 +3,7 @@ TEMP_SHH AS (
 	SELECT * FROM v_exp_item_S
 	WHERE R_ITEM_NAME LIKE 'alb%' 
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
 INTO S_OPD_LAB_ALB
@@ -30,7 +30,7 @@ TEMP_SHH AS (
 	SELECT * FROM v_exp_item_S
 	WHERE R_ITEM_NAME LIKE 'alb%' 
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
 INTO S_IPD_LAB_ALB
@@ -76,14 +76,14 @@ WHERE rn = 1
 
 
 WITH COMBINED_ALB AS (
-    SELECT ID_no, CHR_NO, FEE_NO, fee_code, tube_no, R_DATE, R_TIME, r_item_name, value
+    SELECT distinct ID_no, CHR_NO, FEE_NO, fee_code, tube_no, R_DATE, R_TIME, r_item_name, value
     FROM S_OPD_LAB_ALB
     UNION ALL
-    SELECT ID_no, CHR_NO, FEE_NO, fee_code, tube_no, R_DATE, R_TIME, r_item_name, value
+    SELECT distinct ID_no, CHR_NO, FEE_NO, fee_code, tube_no, R_DATE, R_TIME, r_item_name, value
     FROM S_IPD_LAB_ALB
 ),
 RANKED_ALB AS (
-    SELECT *,
+    SELECT DISTINCT *,
         ROW_NUMBER() OVER (
             PARTITION BY FEE_NO 
             ORDER BY R_DATE, R_TIME
@@ -91,8 +91,8 @@ RANKED_ALB AS (
     FROM COMBINED_ALB
     WHERE ISNUMERIC(LEFT(value, CHARINDEX(' ', value + ' ') - 1)) = 1
 )
-SELECT 
-    FEE_NO,
+SELECT DISTINCT
+    FEE_NO, ID_NO,
     LEFT(value, CHARINDEX(' ', value + ' ') - 1) AS ALB
 INTO FINAL_S_LAB_ALB
 FROM RANKED_ALB

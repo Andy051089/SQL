@@ -3,7 +3,7 @@ TEMP_SHH AS (
 	SELECT * FROM v_exp_item_S
 	WHERE R_ITEM_NAME LIKE 'wbc%' 
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
 INTO S_OPD_LAB_WBC
@@ -30,7 +30,7 @@ TEMP_SHH AS (
 	SELECT * FROM v_exp_item_S
 	WHERE R_ITEM_NAME LIKE 'wbc%' 
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
 INTO S_IPD_LAB_WBC
@@ -60,7 +60,7 @@ WITH COMBINED_WBC AS (
     FROM S_IPD_LAB_WBC
 ),
 RANKED_WBC AS (
-    SELECT *,
+    SELECT DISTINCT *,
         ROW_NUMBER() OVER (
             PARTITION BY FEE_NO 
             ORDER BY R_DATE, R_TIME
@@ -68,8 +68,8 @@ RANKED_WBC AS (
     FROM COMBINED_WBC
     WHERE ISNUMERIC(LEFT(value, CHARINDEX(' ', value + ' ') - 1)) = 1
 )
-SELECT 
-    FEE_NO,
+SELECT DISTINCT
+    FEE_NO,ID_NO,
 	LEFT(value, CHARINDEX(' ', value + ' ') - 1) AS WBC
 INTO FINAL_S_LAB_WBC
 FROM RANKED_WBC

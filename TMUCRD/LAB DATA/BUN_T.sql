@@ -3,10 +3,10 @@ TEMP_TMU AS (
 	SELECT * FROM v_exp_item_T
 	WHERE R_ITEM_NAME LIKE 'bun%' 
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
---INTO T_OPD_LAB_BUN
+INTO T_OPD_LAB_BUN
 from v_opd_exper_T t
 inner join v_opd_fee_T t1
 on t.FEE_NO = t1.fee_no
@@ -30,10 +30,10 @@ TEMP_TMU AS (
 	SELECT * FROM v_exp_item_T
 	WHERE R_ITEM_NAME LIKE 'bun%'
 	)
-select 
+select DISTINCT
 	t3.ID_no, t.CHR_NO, t.FEE_NO, t1.fee_code, t2.tube_no,
 	T2.R_DATE, T2.R_TIME, t4.r_item_name, t2.value 
---INTO T_IPD_LAB_BUN
+INTO T_IPD_LAB_BUN
 from v_opd_exper_T t
 inner join v_Ipd_fee_T t1
 on t.FEE_NO = t1.fee_no
@@ -60,7 +60,7 @@ WITH COMBINED_BUN AS (
     FROM T_IPD_LAB_BUN
 ),
 RANKED_BUN AS (
-    SELECT *,
+    SELECT DISTINCT *,
         ROW_NUMBER() OVER (
             PARTITION BY FEE_NO 
             ORDER BY R_DATE, R_TIME
@@ -68,8 +68,8 @@ RANKED_BUN AS (
     FROM COMBINED_BUN
     WHERE ISNUMERIC(LEFT(value, CHARINDEX(' ', value + ' ') - 1)) = 1
 )
-SELECT 
-    FEE_NO,
+SELECT DISTINCT
+    FEE_NO,ID_NO,
 	LEFT(value, CHARINDEX(' ', value + ' ') - 1) AS BUN
 INTO FINAL_T_LAB_BUN
 FROM RANKED_BUN
